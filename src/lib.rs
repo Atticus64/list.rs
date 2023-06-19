@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-type Next = Rc<RefCell<Option<Node>>>;
+type Next = Option<Rc<RefCell<Node>>>;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Node {
@@ -9,138 +9,157 @@ pub struct Node {
     pub next: Next,
 }
 
+/// Create a new node with the value 
 fn create_node(value: i32) -> Node {
     Node {
         value,
-        next: Rc::new(RefCell::new(None)),
+        next: None,
     }
 }
 
 
 /// Create a new Rc reference to a node 
-fn reference_node(node: Node) -> Rc<RefCell<Option<Node>>> {
-    Rc::new(RefCell::new(Some(node)))
-}
-
-/// borrow the Rc reference and clone it with unwrap
-fn borrow_clone(node: Next) -> Node {
-    node.borrow().clone().unwrap()
+fn reference_node(node: Node) -> Option<Rc<RefCell<Node>>> {
+    Some(Rc::new(RefCell::new(node)))
 }
 
 impl Node {
     pub fn new(item: i32) -> Node {
         Node {
             value: item,
-            next: Rc::new(RefCell::new(None)),
+            next: None,
         }
     }
 
     pub fn add(&mut self, value: i32) -> Node {
         let mut node = create_node(value);
 
-        if self.next.borrow().is_some() {
-            node.next = Rc::new(RefCell::new(Some(self.next.borrow_mut().clone().unwrap())));
+        if self.next.is_some() {
+            node.next = reference_node(self.next.clone().unwrap().borrow().clone());
         }
 
-        self.next = Rc::new(RefCell::new(Some(node.clone())));
+        self.next = reference_node(node.clone());
 
         node
     }
 
+    pub fn addNode(&mut self, mut new_node: Node) {
+        if self.next.is_some() {
+            new_node.next = reference_node(self.next.clone().unwrap().borrow().clone());
+        }
+
+        self.next = reference_node(new_node);
+    }
+
+    pub fn print_node(&self) {
+        print!("{}->", self.value);
+    }
+
     pub fn show(&self) {
-        let mut current = Rc::new(RefCell::new(Some(self.clone())));
-
-        loop {
-            let node = current.borrow_mut().clone().unwrap();
-            println!("{}", node.value);
-
-            if node.next.borrow().is_none() {
-                break;
-            }
-
-            current = node.next.clone();
-        }
-    }
-
-    pub fn delete(&mut self, element: Node) -> bool {
-
-        loop {
-            if self.next.borrow().is_none() {
-                break;
-            }
-
-            let next = borrow_clone(self.next.clone());
-
-            if next == element {
-                self.next = element.next;
-                return true;
-            }
-
-            *self = self.next.take().unwrap();
-            println!("{:?}", self.value);
-        }
-
-       
-        false
-    }
-
-    pub fn exists(&self, element: Node) -> bool {
         let mut current = reference_node(self.clone());
 
-        loop {
-            let node = borrow_clone(current);
+        while let Some(node) = current {
+            let n = node.borrow();
+            n.print_node();
 
-            if node.next.borrow().is_none() {
-                break;
-            }
-
-            if node == element {
-                return true;
-            }
-
-            current = node.next.clone();
+            current = node.borrow().next.clone();
         }
-
-        false
+        println!("null");
     }
 
-    pub fn find(&self, value: i32) -> Option<Node> {
+    pub fn pop(&mut self) -> Option<Node> {
         let mut current = reference_node(self.clone());
+        while let Some(node) = current {
+            let temp = node.borrow().next.clone();
+            let next = temp.unwrap().borrow().next.clone();
 
-        let mut element: Option<Node> = None;
-        loop {
-            let n = borrow_clone(current);
-            if n.value == value {
-                element = Some(n);
-                break;
+            if next.is_none() {
+                let data = node.borrow().next.clone().unwrap();
+                node.borrow_mut().next = None;
+                return Some(data.borrow().clone());
             }
 
-            if n.next.borrow().is_none() {
-                break;
-            }
-
-            current = n.next.clone();
+            current = node.borrow().next.clone();
         }
-        
-        element
 
+        None
     }
 
-    pub fn length(&self) -> u32 {
+    pub fn delete(&mut self, node_to_delete: &Node) -> Option<Node> {
         let mut current = reference_node(self.clone());
-        let mut count: u32 = 0;
+        while let Some(node) = current {
+            let next = node.borrow().next.clone().unwrap().borrow().clone();
+            let replace = next.next.clone();
 
-        loop {
-            let node = borrow_clone(current);
-
-            count += 1;
-            if node.next.borrow().is_none() {
-                break;
+            if &next == node_to_delete {
+                let data = node.borrow().next.clone().unwrap();
+                node.borrow_mut().next = replace;
+                return Some(data.borrow().clone());
             }
 
-            current = node.next.clone();
+            current = node.borrow().next.clone();
         }
 
-        count
+        None
     }
+
+    // pub fn exists(&self, element: Node) -> bool {
+    //     let mut current = reference_node(self.clone());
+    //
+    //     loop {
+    //         let node = borrow_clone(current);
+    //
+    //         if node.next.borrow().is_none() {
+    //             break;
+    //         }
+    //
+    //         if node == element {
+    //             return true;
+    //         }
+    //
+    //         current = node.next.clone();
+    //     }
+    //
+    //     false
+    // }
+    //
+    // pub fn find(&self, value: i32) -> Option<Node> {
+    //     let mut current = reference_node(self.clone());
+    //
+    //     let mut element: Option<Node> = None;
+    //     loop {
+    //         let n = borrow_clone(current);
+    //         if n.value == value {
+    //             element = Some(n);
+    //             break;
+    //         }
+    //
+    //         if n.next.borrow().is_none() {
+    //             break;
+    //         }
+    //
+    //         current = n.next.clone();
+    //     }
+    //    
+    //     element
+    //
+    // }
+
+    // pub fn length(&self) -> u32 {
+    //     let mut current = reference_node(self.clone());
+    //     let mut count: u32 = 0;
+    //
+    //     loop {
+    //         let node = borrow_clone(current);
+    //
+    //         count += 1;
+    //         if node.next.borrow().is_none() {
+    //             break;
+    //         }
+    //
+    //         current = node.next.clone();
+    //     }
+    //
+    //     count
+    // }
 }
