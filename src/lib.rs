@@ -31,6 +31,39 @@ impl Node {
         }
     }
 
+    pub fn from(slice: [i32;5]) -> Node {
+
+        let mut n = Node::new(slice[0]);
+
+        let len = slice.len();
+        for (i, item) in slice.iter().enumerate().take(len)  {
+            if i == 0 {
+                continue;
+            }
+            n.add(*item);
+        }
+
+        n
+    }
+
+    pub fn from_vec(vec: Vec<i32>) -> Node {
+        if vec.is_empty() {
+            return Node {
+                value: 0,
+                next: None,
+            }
+
+        }
+
+        let mut n = Node::new(*vec.first().unwrap());
+
+        for i in 1..vec.len() {
+            n.add(*vec.get(i).unwrap());
+        }
+
+        n
+    }
+
     pub fn add(&mut self, value: i32) -> Node {
         let mut node = create_node(value);
 
@@ -43,14 +76,22 @@ impl Node {
         node
     }
 
-    pub fn addNode(&mut self, mut new_node: Node) {
-        if self.next.is_some() {
-            new_node.next = reference_node(self.next.clone().unwrap().borrow().clone());
+    pub fn add_node(&mut self, new_node: Node) {
+
+        let mut current = reference_node(self.clone());
+        while let Some(node) = current.clone() {
+
+            if node.borrow().next.is_none() {
+                break;
+            }
+
+            current = node.borrow_mut().next.clone();
         }
 
-        self.next = reference_node(new_node);
+        current.clone().unwrap().borrow_mut().next = new_node.next;
+        current.unwrap().borrow_mut().value = new_node.value;
     }
-
+    
     pub fn print_node(&self) {
         print!("{}->", self.value);
     }
@@ -103,63 +144,54 @@ impl Node {
         None
     }
 
-    // pub fn exists(&self, element: Node) -> bool {
-    //     let mut current = reference_node(self.clone());
-    //
-    //     loop {
-    //         let node = borrow_clone(current);
-    //
-    //         if node.next.borrow().is_none() {
-    //             break;
-    //         }
-    //
-    //         if node == element {
-    //             return true;
-    //         }
-    //
-    //         current = node.next.clone();
-    //     }
-    //
-    //     false
-    // }
-    //
-    // pub fn find(&self, value: i32) -> Option<Node> {
-    //     let mut current = reference_node(self.clone());
-    //
-    //     let mut element: Option<Node> = None;
-    //     loop {
-    //         let n = borrow_clone(current);
-    //         if n.value == value {
-    //             element = Some(n);
-    //             break;
-    //         }
-    //
-    //         if n.next.borrow().is_none() {
-    //             break;
-    //         }
-    //
-    //         current = n.next.clone();
-    //     }
-    //    
-    //     element
-    //
-    // }
+    pub fn find(&self, value: i32) -> Option<Node> {
+        let mut current = reference_node(self.clone());
+    
+        let mut element: Option<Node> = None;
+        loop {
+            let v = current.unwrap();
+            let n = v.borrow();
+            if n.value == value {
+                element = Some(n.clone());
+                break;
+            }
+    
+            if n.next.is_none() {
+                break;
+            }
+    
+            current = n.next.clone();
+        }
+       
+        element
+    
+    }
 
-    // pub fn length(&self) -> u32 {
-    //     let mut current = reference_node(self.clone());
-    //     let mut count: u32 = 0;
-    //
-    //     loop {
-    //         let node = borrow_clone(current);
-    //
-    //         count += 1;
-    //         if node.next.borrow().is_none() {
-    //             break;
-    //         }
-    //
-    //         current = node.next.clone();
-    //     }
-    //
-    //     count
-    // }
+    pub fn lenght(&self) -> i32 {
+        let mut current = reference_node(self.clone());
+
+        let mut count = 0;
+        while let Some(node) = current {
+
+            current = node.borrow().next.clone();
+            count += 1;
+        }
+
+        count
+    }
+
+    pub fn items(&self) -> Vec<i32> {
+        let mut current = reference_node(self.clone());
+        let mut items = Vec::new();
+
+        while let Some(node) = current {
+
+            current = node.borrow().next.clone();
+            items.push(node.borrow().value);
+        }
+
+        items
+    }
+
+
 }

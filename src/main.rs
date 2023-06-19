@@ -1,27 +1,34 @@
 use list::Node;
 
 fn main() {
-    let mut list = Node::new(1);
+    // let mut list = Node::from_vec(vec![1, 2, 3, 1]);
+    let mut list = Node::from([1, 2, 3, 1, 6]);
+
+    list.show();
 
     list.add(4);
 
     list.add(8);
 
-    let n = list.add(3);
+    list.add(3);
 
-    let new_node = Node::new(90);
+    let mut n = Node::new(777);
+    n.add(56);  
+    n.add(999);  
 
-    list.addNode(new_node);
+    list.add_node(n);
 
+    list.add(90);
     list.add(2);
 
     list.show();
-
     println!("--------------------");
-    let last = list.pop();
-    let delete = list.delete(&n);
+    let find = list.find(777);
+    let e = find.unwrap();
+
+    println!("del: {:?}", e.value);
     list.show();
-    println!("last: {:?}", last);
-    println!("delete: {:?}", delete);
+    println!("len: {:?}", list.lenght());
+    println!("items: {:?}", list.items());
 
 }
