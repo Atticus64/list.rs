@@ -76,10 +76,11 @@ impl Node {
     ///
     /// califications.add(8);
     /// califications.add(10);
-    /// califications.add(7);
+    /// let n = califications.add(7);
     ///
     /// califications.show();
     /// // 9->7->10->8
+    /// assert_eq!(n.value, 7);
     ///
     ///
     /// ```
@@ -89,7 +90,7 @@ impl Node {
 
         if self.next.is_some() {
             node.next = reference_node(self.next.clone().unwrap().borrow().clone());
-        }
+       }
 
         self.next = reference_node(node.clone());
 
@@ -149,6 +150,7 @@ impl Node {
     /// // actual list -> 1->3->2
     /// let n = node.pop(); // delete 2 and returns it
     /// // n.value == 2
+    /// assert_eq!(n.unwrap().value, 2);
     ///
     ///
     /// ```
@@ -175,12 +177,11 @@ impl Node {
     /// ```rust
     /// use list::Node;
     ///
-    /// let node = Node::new(1);
+    /// let mut node = Node::new(1);
     /// 
     /// let second = node.add(2);
     /// node.add(3);
     /// let n = node.delete(&second); // delete 2 and returns it
-    /// n.value; // 2
     /// node.show(); // 1->3->null
     ///
     /// ```
@@ -209,7 +210,7 @@ impl Node {
     /// ```rust
     /// use list::Node;
     ///
-    /// let node = Node::new(1);
+    /// let mut node = Node::new(1);
     /// 
     /// node.add(2);
     /// node.add(3);
