@@ -70,13 +70,15 @@ impl Node {
     ///
     ///
     /// ```rust
+    /// use list::Node;
+    ///
     /// let mut califications = Node::new(9);
     ///
-    /// califications.add(8)
-    /// califications.add(10)
-    /// califications.add(7)
+    /// califications.add(8);
+    /// califications.add(10);
+    /// califications.add(7);
     ///
-    /// califications 
+    /// califications.show();
     /// // 9->7->10->8
     ///
     ///
@@ -138,13 +140,15 @@ impl Node {
     ///
     ///
     /// ```rust
+    /// use list::Node;
+    ///
     /// let mut node = Node::new(1);
     /// 
     /// node.add(2);
     /// node.add(3);
     /// // actual list -> 1->3->2
     /// let n = node.pop(); // delete 2 and returns it
-    /// n.value // 2
+    /// // n.value == 2
     ///
     ///
     /// ```
@@ -169,6 +173,8 @@ impl Node {
     /// Delete a specific node if exists and return it
     ///
     /// ```rust
+    /// use list::Node;
+    ///
     /// let node = Node::new(1);
     /// 
     /// let second = node.add(2);
@@ -201,12 +207,14 @@ impl Node {
     /// Example
     /// 
     /// ```rust
+    /// use list::Node;
+    ///
     /// let node = Node::new(1);
     /// 
     /// node.add(2);
     /// node.add(3);
     /// let n = node.find(2); // delete 3 and returns it
-    /// n.value // 2
+    /// // n.value == 2
     ///
     ///
     /// ```
