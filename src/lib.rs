@@ -31,6 +31,7 @@ impl Node {
         }
     }
 
+    /// Creates a Node from a list of integers of 5 length
     pub fn from(slice: [i32;5]) -> Node {
 
         let mut n = Node::new(slice[0]);
@@ -46,6 +47,7 @@ impl Node {
         n
     }
 
+    /// creates a Node from a Vec
     pub fn from_vec(vec: Vec<i32>) -> Node {
         if vec.is_empty() {
             return Node {
@@ -64,6 +66,22 @@ impl Node {
         n
     }
 
+    /// add a node with the value to the LinkedList
+    ///
+    ///
+    /// ```rust
+    /// let mut califications = Node::new(9);
+    ///
+    /// califications.add(8)
+    /// califications.add(10)
+    /// califications.add(7)
+    ///
+    /// califications 
+    /// // 9->7->10->8
+    ///
+    ///
+    /// ```
+    ///
     pub fn add(&mut self, value: i32) -> Node {
         let mut node = create_node(value);
 
@@ -76,6 +94,7 @@ impl Node {
         node
     }
 
+    /// add a node to end of linkedList
     pub fn add_node(&mut self, new_node: Node) {
 
         let mut current = reference_node(self.clone());
@@ -92,10 +111,17 @@ impl Node {
         current.unwrap().borrow_mut().value = new_node.value;
     }
     
+    /// print the value of Node
     pub fn print_node(&self) {
         print!("{}->", self.value);
     }
 
+    /// show all nodes in the LinkedList
+    ///
+    /// ```text
+    /// value->value2->...
+    /// ```
+    ///
     pub fn show(&self) {
         let mut current = reference_node(self.clone());
 
@@ -108,6 +134,20 @@ impl Node {
         println!("null");
     }
 
+    /// Eliminate the last node and get it if exists
+    ///
+    ///
+    /// ```rust
+    /// let mut node = Node::new(1);
+    /// 
+    /// node.add(2);
+    /// node.add(3);
+    /// // actual list -> 1->3->2
+    /// let n = node.pop(); // delete 2 and returns it
+    /// n.value // 2
+    ///
+    ///
+    /// ```
     pub fn pop(&mut self) -> Option<Node> {
         let mut current = reference_node(self.clone());
         while let Some(node) = current {
@@ -126,6 +166,18 @@ impl Node {
         None
     }
 
+    /// Delete a specific node if exists and return it
+    ///
+    /// ```rust
+    /// let node = Node::new(1);
+    /// 
+    /// let second = node.add(2);
+    /// node.add(3);
+    /// let n = node.delete(&second); // delete 2 and returns it
+    /// n.value; // 2
+    /// node.show(); // 1->3->null
+    ///
+    /// ```
     pub fn delete(&mut self, node_to_delete: &Node) -> Option<Node> {
         let mut current = reference_node(self.clone());
         while let Some(node) = current {
@@ -144,6 +196,20 @@ impl Node {
         None
     }
 
+    /// Find a node by value
+    /// 
+    /// Example
+    /// 
+    /// ```rust
+    /// let node = Node::new(1);
+    /// 
+    /// node.add(2);
+    /// node.add(3);
+    /// let n = node.find(2); // delete 3 and returns it
+    /// n.value // 2
+    ///
+    ///
+    /// ```
     pub fn find(&self, value: i32) -> Option<Node> {
         let mut current = reference_node(self.clone());
     
@@ -167,6 +233,7 @@ impl Node {
     
     }
 
+    /// get the current length of LinkedList
     pub fn lenght(&self) -> i32 {
         let mut current = reference_node(self.clone());
 
@@ -180,6 +247,7 @@ impl Node {
         count
     }
 
+    /// get all items in the linkedList with a Vec
     pub fn items(&self) -> Vec<i32> {
         let mut current = reference_node(self.clone());
         let mut items = Vec::new();
