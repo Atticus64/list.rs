@@ -89,10 +89,10 @@ impl Node {
         let mut node = create_node(value);
 
         if self.next.is_some() {
-            node.next = reference_node(self.next.clone().unwrap().borrow().clone());
-       }
+            node.next = Some(self.next.clone().unwrap());
+        }
 
-        self.next = reference_node(node.clone());
+        self.next = reference_node(node.clone()); 
 
         node
     }
